@@ -1,0 +1,94 @@
+/* Shared styles for biophysics-portfolio subpages.
+   Palette and typography mirror index.html. */
+:root{
+  --bench:#eef1f0; --paper:#fbfcfc; --ink:#0e1518; --muted:#5b6b72;
+  --hair:#d7dedf; --cy5:#e23b2e; --cy3:#1fa363;
+  --display:'Archivo',system-ui,sans-serif; --body:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bench);color:var(--ink);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+
+/* topbar */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(238,241,240,.82);backdrop-filter:blur(8px);border-bottom:1px solid var(--hair)}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+.brandmark{font-family:var(--mono);font-weight:600;font-size:14px;text-decoration:none}
+.navlinks{display:flex;gap:22px;font-family:var(--mono);font-size:12.5px;letter-spacing:.04em}
+.navlinks a{color:var(--muted);text-decoration:none;padding:4px 0;border-bottom:1px solid transparent;transition:.15s}
+.navlinks a:hover,.navlinks a:focus-visible{color:var(--ink);border-color:var(--cy5)}
+.navlinks a.here{color:var(--ink);border-color:var(--cy5)}
+@media(max-width:760px){.navlinks{gap:14px;font-size:11.5px}}
+@media(max-width:560px){.navlinks a.hide-sm{display:none}}
+
+/* page header */
+.pagehead{padding:56px 0 34px;border-bottom:1px solid var(--hair)}
+.crumb{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none}
+.crumb:hover{color:var(--cy5)}
+.pagehead h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,46px);line-height:1.05;letter-spacing:-.02em;margin:14px 0 0;max-width:22ch}
+.pagehead h1 .accent{color:var(--cy5)}
+.lede{font-size:17px;color:var(--muted);max-width:62ch;margin:18px 0 0}
+.lede strong{color:var(--ink);font-weight:600}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:22px}
+.tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;color:var(--muted);border:1px solid var(--hair);border-radius:2px;padding:3px 8px;background:var(--paper)}
+
+/* content */
+.section{padding:46px 0}
+.section h2{font-family:var(--display);font-weight:700;font-size:24px;letter-spacing:-.01em;margin:0 0 4px}
+.section h3{font-family:var(--display);font-weight:600;font-size:17px;margin:26px 0 6px}
+.section p{max-width:70ch;color:#2a3a40}
+.rule{border:none;border-top:1px solid var(--hair);margin:0}
+
+/* two-column layout */
+.cols{display:grid;grid-template-columns:1.6fr 1fr;gap:42px;align-items:start}
+@media(max-width:860px){.cols{grid-template-columns:1fr;gap:28px}}
+
+/* side panel */
+.panel{background:var(--paper);border:1px solid var(--hair);border-radius:4px;padding:18px 20px}
+.panel h4{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:600}
+.panel ul{margin:0;padding-left:16px;font-size:13.5px;color:#2a3a40}
+.panel ul li{margin-bottom:5px}
+.panel + .panel{margin-top:16px}
+
+/* step list */
+.steps{counter-reset:step;list-style:none;padding:0;margin:14px 0 0}
+.steps li{counter-increment:step;position:relative;padding:0 0 16px 44px;border-left:1px solid var(--hair);margin-left:14px}
+.steps li:last-child{border-left-color:transparent;padding-bottom:0}
+.steps li::before{content:counter(step,decimal-leading-zero);position:absolute;left:-14px;top:0;width:28px;height:28px;display:grid;place-items:center;border-radius:3px;background:var(--cy5);color:var(--paper);font-family:var(--mono);font-size:11px;font-weight:600}
+.steps li.alt::before{background:var(--cy3)}
+.steps b{font-family:var(--display);font-size:15px;display:block;margin-bottom:2px}
+.steps span{font-size:13.5px;color:var(--muted)}
+
+/* code block */
+pre.code-block{background:var(--paper);border:1px solid var(--hair);border-left:3px solid var(--cy3);border-radius:3px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.65;color:#243036;margin:14px 0}
+
+/* figure */
+.figure{background:var(--paper);border:1px solid var(--hair);border-radius:4px;padding:16px 16px 10px}
+.figure .figlabel{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em;margin-bottom:6px}
+.figcap{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5}
+svg .grid{stroke:var(--hair);stroke-width:1}
+svg .axis{stroke:#b9c3c5;stroke-width:1}
+svg .curve{fill:none;stroke-width:2.5;stroke-linecap:round}
+svg .c5{stroke:var(--cy5)} svg .c3{stroke:var(--cy3)}
+
+/* notebook links */
+.nblist{display:grid;gap:2px;margin-top:10px}
+.nblist a{display:flex;gap:14px;align-items:baseline;text-decoration:none;padding:10px;margin-left:-10px;border-radius:3px;transition:background .12s}
+.nblist a:hover,.nblist a:focus-visible{background:var(--paper)}
+.nblist .nb-name{font-family:var(--mono);font-size:12.5px;color:var(--cy5);flex:0 0 auto;width:26px}
+.nblist .nb-title{font-size:13.5px}
+.nblist .nb-desc{color:var(--muted);font-size:12.5px}
+
+.btn{font-family:var(--mono);font-size:13px;text-decoration:none;padding:11px 18px;border-radius:2px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);transition:.15s;display:inline-block}
+.btn:hover,.btn:focus-visible{background:transparent;color:var(--ink)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--hair)}
+.btn.ghost:hover,.btn.ghost:focus-visible{border-color:var(--cy5);color:var(--cy5)}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+
+.note{margin-top:26px;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:var(--paper);border:1px dashed var(--hair);border-radius:3px;padding:12px 14px;line-height:1.6}
+footer{padding:26px 0 40px;font-family:var(--mono);font-size:11.5px;color:var(--muted);border-top:1px solid var(--hair)}
+:focus-visible{outline:2px solid var(--cy5);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

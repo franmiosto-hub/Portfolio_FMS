@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protein expression, purification &amp; characterization — Fran Miočić-Stošić</title>
+<meta name="description" content="Recombinant expression, chromatographic purification, and biophysical characterization of RNA-binding proteins — with quantitative analysis of every step.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+  <a class="brandmark" href="index.html">Fran Miočić-Stošić</a>
+  <nav class="navlinks">
+    <a href="index.html">profile</a>
+    <a href="dosy-binding-modelling.html">dosy</a>
+    <a href="peptide-array-binding.html">arrays</a>
+    <a class="here" href="protein-expression-purification.html">protein</a>
+    <a href="md-free-energy-perturbation.html">md &amp; fep</a>
+    <a class="hide-sm" href="https://franmiosto-hub.github.io/biophysics-portfolio/#work" target="_blank" rel="noopener noreferrer">code ↗</a>
+  </nav>
+</div></div>
+
+<header class="pagehead"><div class="wrap">
+  <a class="crumb" href="https://franmiosto-hub.github.io/biophysics-portfolio/" target="_blank" rel="noopener noreferrer">← code &amp; notebooks ↗</a>
+  <p class="eyebrow" style="margin-top:18px">Method page · wet lab + analysis</p>
+  <h1>Protein expression, purification and <span class="accent">characterization</span></h1>
+  <p class="lede">Every computational result upstream of this page depends on one thing: a sample that is <strong>pure, folded and correctly quantified</strong>. Around five years of protein production across several systems and institutions, roughly <strong>ten constructs across four to five protein systems</strong>, and — on the PhD work — the RNA side of the same problem, where the bottleneck turned out to be.</p>
+  <div class="tags">
+    <span class="tag">FUS · FMRP</span><span class="tag">~10 constructs / 4–5 systems</span>
+    <span class="tag">E. coli expression</span><span class="tag">ÄKTA/FPLC · SEC · Ni-NTA</span>
+    <span class="tag">In vitro transcription</span><span class="tag">ITC · SEC-MALS · CD · DLS</span>
+    <span class="tag">SAXS · crystallisation</span><span class="tag">TOF-MS verification</span>
+  </div>
+</div></header>
+
+<main>
+
+<section class="section"><div class="wrap"><div class="cols">
+  <div>
+    <p class="eyebrow">Workflow</p>
+    <h2>Construct design as the main lever</h2>
+    <p>RNA-binding proteins are awkward expression targets: frequently disordered in part, highly basic, prone to co-purifying with host nucleic acid, and liable to aggregate at the concentrations biophysics demands. Most of the gain comes from design decisions taken before any culture is grown.</p>
+
+    <p>Across the FUS and FMRP work this meant codon optimisation, solubility-tag choice and tag placement, changed expression conditions, and truncation and purity control — iterated against what the downstream assay actually required. On one construct this design and workflow optimisation produced an approximately <strong>tenfold yield improvement</strong>. Full-length FMRP expression and purification was established after redesign; the subsequent decision was deliberately not to overextend it as the primary assay system, because a protein you can make is not automatically the protein your experiment should be built on.</p>
+
+    <ol class="steps">
+      <li><b>Construct and boundary design</b><span>Domain boundaries informed by disorder prediction and sequence analysis; codon optimisation, tag choice and placement, truncation strategy — selected against the downstream measurement, not against ease of purification.</span></li>
+      <li class="alt"><b>Expression and condition optimisation</b><span>Strain, temperature and induction conditions scored on soluble yield. Bacterial systems throughout; mammalian expression was attempted during the Graz placement and did not succeed.</span></li>
+      <li><b>Capture and purification</b><span>Affinity capture through to polishing — Ni-NTA (including peristaltic-pump setups) and ÄKTA/FPLC, size exclusion, SDS-PAGE at every stage. A260/A280 tracked throughout, since co-purified nucleic acid silently inflates apparent concentration and destroys binding stoichiometry.</span></li>
+      <li class="alt"><b>RNA production</b><span>The other half of the problem: in vitro transcription workflows, plasmid linearisation, and domain-specific constructs including long and GC-rich sequences.</span></li>
+      <li><b>Verification</b><span>Identity by intact-protein TOF-MS and peptide fingerprinting; purity by gel; fold and stability by circular dichroism and thermal-stability measurement; size and homogeneity by SEC and SEC-MALS.</span></li>
+      <li class="alt"><b>Handover to assay</b><span>Concentration and method, A260/A280, SEC profile, gel, and buffer composition recorded — buffer mismatch shows up later as an ITC baseline artefact or a phantom NMR shift.</span></li>
+    </ol>
+
+    <h3>The bottleneck, named</h3>
+    <p>The RNA side, not the protein side, is what limited the project. RNA yield and purity — particularly for long and GC-rich sequences — proved insufficient to support the quantitative combinatorial binding assays originally planned. Identifying that bottleneck explicitly, rather than continuing to generate underpowered binding data, is what redirected the work toward the array and simulation routes.</p>
+
+    <h3>Structural biophysics alongside</h3>
+    <p>Earlier placements in Marseille and Graz covered the wider characterisation toolkit hands-on: ITC with thermal-stability-guided condition optimisation, SEC-MALS, crystallisation and diffraction testing, SAXS measurement, processing and structural docking, CD and DLS, thermal-shift and activity assays, and EM sample preparation. Several of these produced negative or uninterpretable results — salt crystals, protein precipitation, unsuccessful mammalian expression — which is where the operational knowledge came from.</p>
+
+    <h3>Analysis that runs alongside the bench work</h3>
+    <p>The quantitative parts are scripted rather than done by eye: extinction coefficients and molecular weights computed from sequence with Biopython, SEC calibration curves fitted and inverted for apparent molecular weight, gel lanes integrated for purity, thermal-melt traces fitted for a T<sub>m</sub>, and residue-level properties — disorder, charge, van der Waals volume — computed to explain why a given construct behaves as it does.</p>
+
+    <pre class="code-block">from Bio.SeqUtils.ProtParam import ProteinAnalysis
+
+pa  = ProteinAnalysis(sequence)
+eps = pa.molar_extinction_coefficient()[1]   # reduced / cystine forms
+mw  = pa.molecular_weight()
+pI  = pa.isoelectric_point()
+
+conc_M   = a280 / (eps * pathlength)
+conc_mgml = conc_M * mw / 1000
+purity_A = a260 / a280            # > 0.8 → nucleic-acid contamination</pre>
+
+    <h3>Scope note</h3>
+    <p>This is protein-science and developability-adjacent work — aggregation and solubility, thermal and conformational stability, sequence liabilities, expression and manufacturability optimisation — carried out in a research setting. It is not industrial antibody-platform or GMP process ownership, and the depth varies by method: several of the biophysical techniques above reflect hands-on early-career execution rather than long-term platform ownership.</p>
+  </div>
+
+  <aside>
+    <div class="figure">
+      <div class="figlabel"><span>SEC PROFILE</span><span>elution volume →</span></div>
+      <svg viewBox="0 0 340 210" width="100%" role="img" aria-label="Illustrative size-exclusion chromatogram">
+        <g class="grid">
+          <line x1="38" y1="30" x2="326" y2="30"/><line x1="38" y1="75" x2="326" y2="75"/>
+          <line x1="38" y1="120" x2="326" y2="120"/><line x1="38" y1="165" x2="326" y2="165"/>
+        </g>
+        <line class="axis" x1="38" y1="178" x2="326" y2="178"/>
+        <line class="axis" x1="38" y1="20" x2="38" y2="178"/>
+        <path class="curve c5" d="M38 172 L 78 170 C 92 168, 96 132, 108 128 C 118 125, 124 168, 138 171
+          C 160 174, 172 172, 186 168 C 198 164, 202 44, 218 42 C 234 40, 238 162, 252 170
+          C 276 176, 300 177, 326 177"/>
+        <path class="curve c3" style="stroke-dasharray:4 4;opacity:.55" d="M38 176 L 326 176"/>
+        <text x="98" y="118" font-family="JetBrains Mono, monospace" font-size="9" fill="var(--muted)">void</text>
+        <text x="200" y="34" font-family="JetBrains Mono, monospace" font-size="9" fill="var(--cy5)">monomer</text>
+      </svg>
+      <p class="figcap">Illustrative polishing run: a small void peak (aggregate) resolved from the monomeric target. The void:monomer ratio is the go/no-go criterion for downstream biophysics.</p>
+    </div>
+
+    <div class="panel">
+      <h4>At a glance</h4>
+      <ul>
+        <li>~5 years protein production</li>
+        <li>~10 constructs, 4–5 systems</li>
+        <li>~10× yield gain on one construct</li>
+        <li>Full-length FMRP established after redesign</li>
+        <li>Croatia · France · Austria</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h4>Quality-control criteria</h4>
+      <ul>
+        <li>A260/A280 (nucleic-acid carryover)</li>
+        <li>Single symmetric SEC peak</li>
+        <li>Purity by gel</li>
+        <li>Correct intact mass by TOF-MS</li>
+        <li>Cooperative CD thermal melt</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h4>Stack</h4>
+      <ul>
+        <li>Biopython <span class="mono">ProtParam</span></li>
+        <li>NumPy · SciPy curve fitting</li>
+        <li>pandas batch records</li>
+        <li>IUPred2 disorder profiles</li>
+        <li>matplotlib figures</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h4>Related notebooks</h4>
+      <ul>
+        <li><a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/04_sequence_structure_utilities.ipynb" target="_blank" rel="noopener noreferrer">04 · Sequence &amp; structure utilities</a></li>
+      </ul>
+    </div>
+  </aside>
+</div></div></section>
+
+<hr class="rule">
+
+<section class="section"><div class="wrap">
+  <p class="eyebrow">Code</p>
+  <h2>Where this lives in the repository</h2>
+  <div class="nblist">
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/04_sequence_structure_utilities.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§1</span><span><span class="nb-title">IUPred2 disorder profile</span><br><span class="nb-desc">Intrinsic-disorder prediction along a sequence — used for construct boundary design.</span></span></a>
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/04_sequence_structure_utilities.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§2</span><span><span class="nb-title">Amino-acid van der Waals volumes</span><br><span class="nb-desc">Residue volumes from Bondi atomic radii — packing and hydrodynamic reasoning.</span></span></a>
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/04_sequence_structure_utilities.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§3</span><span><span class="nb-title">NMR data heatmaps</span><br><span class="nb-desc">Tabular NMR characterisation data rendered as annotated heatmaps.</span></span></a>
+  </div>
+  <div class="cta-row">
+    <a class="btn" href="https://github.com/franmiosto-hub/biophysics-portfolio" target="_blank" rel="noopener noreferrer">Repository ↗</a>
+    <a class="btn ghost" href="https://franmiosto-hub.github.io/biophysics-portfolio/#work" target="_blank" rel="noopener noreferrer">All projects</a>
+  </div>
+  <p class="note">Constructs, expression conditions and purification protocols for unpublished targets are described at method level only. Parts of the underlying work were done in collaboration; only my own code is included in the repository.</p>
+</div></section>
+
+</main>
+
+<footer><div class="wrap">Protein expression, purification and characterization · static page · works on GitHub Pages</div></footer>
+</body>
+</html>

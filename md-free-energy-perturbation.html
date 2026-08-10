@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Molecular dynamics &amp; free energy perturbation — Fran Miočić-Stošić</title>
+<meta name="description" content="A custom GROMACS/SMArt RNA nucleotide-transformation free-energy framework, plus ~1 µs equilibrium MD per complex across three structured FUS RNA-binding systems.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+  <a class="brandmark" href="index.html">Fran Miočić-Stošić</a>
+  <nav class="navlinks">
+    <a href="index.html">profile</a>
+    <a href="dosy-binding-modelling.html">dosy</a>
+    <a href="peptide-array-binding.html">arrays</a>
+    <a href="protein-expression-purification.html">protein</a>
+    <a class="here" href="md-free-energy-perturbation.html">md &amp; fep</a>
+    <a class="hide-sm" href="https://franmiosto-hub.github.io/biophysics-portfolio/#work" target="_blank" rel="noopener noreferrer">code ↗</a>
+  </nav>
+</div></div>
+
+<header class="pagehead"><div class="wrap">
+  <a class="crumb" href="https://franmiosto-hub.github.io/biophysics-portfolio/" target="_blank" rel="noopener noreferrer">← code &amp; notebooks ↗</a>
+  <p class="eyebrow" style="margin-top:18px">Method page · simulation</p>
+  <h1>Molecular dynamics and <span class="accent">free energy perturbations</span></h1>
+  <p class="lede">A <strong>custom alchemical framework for transforming RNA nucleotides</strong>, built to ask what a single base substitution does to protein–RNA binding — plus roughly <strong>1 µs of equilibrium MD per complex</strong> across three structured FUS RNA-binding systems. The framework is the output here; the simulations are what tested it.</p>
+  <div class="tags">
+    <span class="tag">Custom FEP framework</span><span class="tag">GROMACS · SMArt</span>
+    <span class="tag">~1 µs per complex</span><span class="tag">3 FUS systems</span>
+    <span class="tag">BAR / MBAR</span><span class="tag">Hysteresis analysis</span>
+    <span class="tag">MDAnalysis</span><span class="tag">Bash · Slurm/HPC</span>
+  </div>
+</div></header>
+
+<main>
+
+<section class="section"><div class="wrap"><div class="cols">
+  <div>
+    <p class="eyebrow">Part one</p>
+    <h2>Equilibrium simulation and structural analysis</h2>
+    <p>Approximately one microsecond of equilibrium MD per complex, across three structured FUS RNA-binding systems, analysed for RMSD, RMSF, radius of gyration, contact patterns, overall stability, and the effect of construct truncation. This built on earlier AMBER20 work on wild-type and P358L/P360S DPP III at 150 ns per system — the MSc-era study where the wet-dry loop was first closed end to end.</p>
+
+    <p>Protein–RNA systems are strongly charged and slow to equilibrate, so setup gets more attention than the production run: careful ion placement and counter-ion neutralisation, a force field chosen for nucleic-acid compatibility, staged restrained equilibration, and box dimensions large enough that a highly charged solute does not interact with its periodic image.</p>
+
+    <p>Post-processing is scripted end to end — trajectory centring and fitting to remove periodic-boundary jumps, then a standard battery of observables. The structural questions are answered at contact level: which residues touch the RNA, how often, and for how long.</p>
+
+    <pre class="code-block"># trajectory conditioning and observables
+gmx trjconv -s md.tpr -f md.xtc -o md_nojump.xtc -pbc nojump
+gmx trjconv -s md.tpr -f md_nojump.xtc -o md_fit.xtc -fit rot+trans
+gmx rms     -s md.tpr -f md_fit.xtc -o rmsd.xvg
+gmx rmsf    -s md.tpr -f md_fit.xtc -o rmsf.xvg -res
+gmx gyrate  -s md.tpr -f md_fit.xtc -o gyrate.xvg
+
+# MDAnalysis: residue-level contact frequency
+u = mda.Universe("md.tpr", "md_fit.xtc")
+prot = u.select_atoms("protein and name CA")
+rna  = u.select_atoms("nucleic and name C1'")
+# per-frame distance matrix → boolean contacts within cutoff → time average</pre>
+
+    <h3>What comes out</h3>
+    <p>RMSD and radius of gyration for global stability, per-residue RMSF for local flexibility, Cα–C1′ distance maps for interface geometry, contact counts over time for interface stability, and residue-level contact-frequency heatmaps that make the binding interface directly comparable to the residue contributions derived from the peptide array.</p>
+
+    <hr class="rule" style="margin:34px 0 0">
+
+    <p class="eyebrow" style="margin-top:34px">Part two</p>
+    <h2>A custom RNA nucleotide-transformation framework</h2>
+    <p>Free-energy perturbation answers a question equilibrium MD cannot: how much does a specific substitution change binding? Most available tooling assumes amino-acid mutation. Transforming one <em>nucleotide</em> into another inside a bound RNA is a different problem — the perturbed group is larger, charged, stacked against its neighbours, and coupled to a backbone that will not hold still — and it needed a framework built for it, using GROMACS with SMArt-generated alchemical topologies.</p>
+
+    <p>The system is transformed along a coupling parameter λ from state A to state B in both the bound and free legs; the thermodynamic cycle gives the relative binding free energy.</p>
+
+    <pre class="code-block">ΔΔG_bind = ΔG_A→B(complex) - ΔG_A→B(free)
+
+# BAR: solve self-consistently for ΔG between adjacent λ windows
+Σ f(U_ij - ΔG) = Σ f(U_ji + ΔG),   f(x) = 1/(1 + exp(βx))
+
+ΔG_total = Σ_λ ΔG_λ,λ+1</pre>
+
+    <p>The practical work is in the details: soft-core potentials to avoid singularities as atoms appear and disappear, λ spacing dense enough that neighbouring windows overlap, advanced sampling where plain λ ladders were insufficient, and multiple independent trajectories rather than one long run. BAR and MBAR estimates are then checked for convergence — forward/backward hysteresis, phase-space overlap between adjacent windows, and block-averaged drift of the running estimate.</p>
+
+    <h3>EDS topologies</h3>
+    <p>Enveloping distribution sampling offers an alternative to a λ ladder: a single reference state that envelopes multiple end states, sampled in one simulation. Topology construction uses the SMArt library — an external, non-PyPI dependency by Dražen Petrov, referenced and attributed here, not redistributed.</p>
+
+    <h3>Treating free energy as a sampling problem, not a tool run</h3>
+    <p>An unconverged free energy looks exactly like a converged one if you only plot the final number. Every estimate therefore carries the running value against simulation time, the per-window contributions (a single dominant window is a warning sign), and replicate-to-replicate spread as the honest error bar — usually larger than the statistical error the estimator reports.</p>
+
+    <p>That discipline produced a negative result worth stating: the more dynamic protein–RNA complexes were <strong>not suitable for straightforward FEP</strong>. Hysteresis and sampling problems persisted through multiple trajectories and advanced sampling, and the conclusion drawn was that the method's assumptions did not hold for those systems — rather than reporting numbers the sampling did not support. Knowing where a free-energy workflow stops being valid is the part that transfers.</p>
+  </div>
+
+  <aside>
+    <div class="figure">
+      <div class="figlabel"><span>BAR CONVERGENCE</span><span>time →</span></div>
+      <svg viewBox="0 0 340 200" width="100%" role="img" aria-label="Illustrative running BAR free-energy estimate">
+        <g class="grid">
+          <line x1="40" y1="30" x2="326" y2="30"/><line x1="40" y1="70" x2="326" y2="70"/>
+          <line x1="40" y1="110" x2="326" y2="110"/><line x1="40" y1="150" x2="326" y2="150"/>
+        </g>
+        <line class="axis" x1="40" y1="170" x2="326" y2="170"/>
+        <line class="axis" x1="40" y1="18" x2="40" y2="170"/>
+        <path d="M40 110 L326 110" stroke="var(--cy3)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" opacity=".8"/>
+        <path class="curve c5" d="M42 42 C 62 74, 74 132, 92 100 C 106 76, 118 130, 134 106
+          C 150 86, 162 124, 180 108 C 198 94, 208 120, 226 110
+          C 246 100, 258 116, 278 110 C 298 105, 312 112, 326 110"/>
+        <text x="248" y="104" font-family="JetBrains Mono, monospace" font-size="9" fill="var(--cy3)">plateau</text>
+      </svg>
+      <p class="figcap">Illustrative running BAR estimate settling onto a plateau. Replicate spread, not the estimator's statistical error, sets the reported uncertainty.</p>
+    </div>
+
+    <div class="panel">
+      <h4>At a glance</h4>
+      <ul>
+        <li>~1 µs equilibrium MD per complex</li>
+        <li>3 structured FUS RNA-binding systems</li>
+        <li>Custom nucleotide-transformation FEP</li>
+        <li>Multiple independent replicas</li>
+        <li>AMBER20 DPP III precedent, 150 ns/system</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h4>Observables</h4>
+      <ul>
+        <li>RMSD · RMSF · R<sub>g</sub> · energies</li>
+        <li>Cα–C1′ distance matrices</li>
+        <li>Contact counts vs. time</li>
+        <li>Residue contact frequencies</li>
+        <li>ΔG per λ window, ΔΔG<sub>bind</sub></li>
+        <li>Overlap and hysteresis diagnostics</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h4>Stack</h4>
+      <ul>
+        <li>GROMACS (<span class="mono">gmx</span> toolchain, .xvg)</li>
+        <li>MDAnalysis · NumPy · pandas</li>
+        <li>BAR / MBAR estimators</li>
+        <li>SMArt for EDS topologies (external)</li>
+        <li>Bash pipelines · matplotlib · seaborn</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h4>Related notebooks</h4>
+      <ul>
+        <li><a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/03_molecular_dynamics_analysis.ipynb" target="_blank" rel="noopener noreferrer">03 · Molecular dynamics &amp; free-energy analysis</a></li>
+        <li><a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/06_fus_protein_rna_md_analysis.ipynb" target="_blank" rel="noopener noreferrer">06 · FUS protein–RNA MD analysis</a></li>
+      </ul>
+    </div>
+  </aside>
+</div></div></section>
+
+<hr class="rule">
+
+<section class="section"><div class="wrap">
+  <p class="eyebrow">Code</p>
+  <h2>Where this lives in the repository</h2>
+  <div class="nblist">
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/03_molecular_dynamics_analysis.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§1</span><span><span class="nb-title">GROMACS .xvg time-series</span><br><span class="nb-desc">Load and plot simulation observables over time.</span></span></a>
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/03_molecular_dynamics_analysis.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§2</span><span><span class="nb-title">Protein–RNA distance matrix</span><br><span class="nb-desc">Render a distance/contact map from a matrix .xvg.</span></span></a>
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/03_molecular_dynamics_analysis.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§3</span><span><span class="nb-title">Simulation matrix heatmap</span><br><span class="nb-desc">Pairwise free-energy / distance matrix as a heatmap.</span></span></a>
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/03_molecular_dynamics_analysis.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§4</span><span><span class="nb-title">BAR free-energy convergence</span><br><span class="nb-desc">Assess convergence of alchemical BAR estimates.</span></span></a>
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/03_molecular_dynamics_analysis.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§5</span><span><span class="nb-title">EDS alchemical topology conversion</span><br><span class="nb-desc">Build EDS topologies with the SMArt library (external environment).</span></span></a>
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/06_fus_protein_rna_md_analysis.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">06</span><span><span class="nb-title">FUS protein–RNA MD pipeline</span><br><span class="nb-desc">Trajectory post-processing, RMSD/RMSF/Rg, distance maps, contact counting and contact-frequency heatmaps.</span></span></a>
+  </div>
+  <div class="cta-row">
+    <a class="btn" href="https://github.com/franmiosto-hub/biophysics-portfolio" target="_blank" rel="noopener noreferrer">Repository ↗</a>
+    <a class="btn ghost" href="https://franmiosto-hub.github.io/biophysics-portfolio/#work" target="_blank" rel="noopener noreferrer">All projects</a>
+  </div>
+  <p class="note">SMArt is an external library by Dražen Petrov and is referenced as a dependency, not redistributed here. Parts of the underlying work were done in collaboration; only my own code is included in the repository.</p>
+</div></section>
+
+</main>
+
+<footer><div class="wrap">Molecular dynamics and free energy perturbations · static page · works on GitHub Pages</div></footer>
+</body>
+</html>

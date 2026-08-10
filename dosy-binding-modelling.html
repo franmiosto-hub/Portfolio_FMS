@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Binding modelling in DOSY — Fran Miočić-Stošić</title>
+<meta name="description" content="Modelling weak amino-acid–nucleotide interactions by diffusion-ordered NMR: population-weighted diffusion coefficients, sensitivity limits, and explicit treatment of model boundaries.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+  <a class="brandmark" href="index.html">Fran Miočić-Stošić</a>
+  <nav class="navlinks">
+    <a href="index.html">profile</a>
+    <a class="here" href="dosy-binding-modelling.html">dosy</a>
+    <a href="peptide-array-binding.html">arrays</a>
+    <a href="protein-expression-purification.html">protein</a>
+    <a href="md-free-energy-perturbation.html">md &amp; fep</a>
+    <a class="hide-sm" href="https://franmiosto-hub.github.io/biophysics-portfolio/#work" target="_blank" rel="noopener noreferrer">code ↗</a>
+  </nav>
+</div></div>
+
+<header class="pagehead"><div class="wrap">
+  <a class="crumb" href="https://franmiosto-hub.github.io/biophysics-portfolio/" target="_blank" rel="noopener noreferrer">← code &amp; notebooks ↗</a>
+  <p class="eyebrow" style="margin-top:18px">Method page · NMR</p>
+  <h1>Binding modelling in <span class="accent">DOSY</span></h1>
+  <p class="lede">The monomeric scale of the protein–RNA problem: do individual <strong>amino acids</strong> interact measurably with <strong>nucleotide monophosphates</strong>, and can that be quantified? Diffusion-ordered spectroscopy reports a population-weighted average diffusion coefficient, so in principle it can. In practice the interactions are weak, and most of the work is establishing what the measurement can and cannot resolve.</p>
+  <div class="tags">
+    <span class="tag">DOSY / PFG-NMR</span><span class="tag">Stejskal–Tanner</span>
+    <span class="tag">Amino acid · NMP</span><span class="tag">Internal dioxane standard</span>
+    <span class="tag">SciPy</span><span class="tag">Sensitivity analysis</span>
+  </div>
+  <p class="note" style="margin-top:22px">Contribution: I designed the experiments and models, prepared the samples, and analysed the results. NMR measurements and initial signal analysis were performed by specialist collaborators.</p>
+</div></header>
+
+<main>
+
+<section class="section"><div class="wrap"><div class="cols">
+  <div>
+    <p class="eyebrow">Principle</p>
+    <h2>Diffusion as a binding observable</h2>
+    <p>Each DOSY experiment is a gradient-strength series. Fitting the Stejskal–Tanner attenuation to the observed intensities gives a diffusion coefficient <em>D</em><sub>obs</sub> for every resolved resonance. Under fast exchange, that observable is the population-weighted mean of the free and complexed states — so a species that spends part of its time associated diffuses measurably more slowly than it would alone.</p>
+
+    <pre class="code-block">I(g) / I(0) = exp[ -D · γ²g²δ² (Δ - δ/3) ]
+
+D_obs = (1 - θ)·D_free + θ·D_bound
+        with θ = fraction associated
+
+# with an inert internal standard (dioxane) to remove
+# viscosity and temperature differences between samples
+D_corr = D_obs · (D_ref,sample_0 / D_ref,sample_i)</pre>
+
+    <p>The attraction of the method here is that it needs no label, no immobilisation and no separation step, and it works on species too small and too weakly interacting for most biophysical assays. The difficulty is the same fact from the other side: for amino acid–nucleotide pairs the effect on <em>D</em> is small, and it sits uncomfortably close to the reproducibility of the measurement itself.</p>
+
+    <h3>Scope: the monomeric scale</h3>
+    <p>This work sits at the smallest scale of a larger protein–RNA question. Rather than starting from a folded protein and a structured RNA, it asks whether the constituent chemistry — a single amino acid against a nucleotide monophosphate — already encodes measurable preference. Early tests on alanine and methionine were expanded into a broader monomeric framework across amino acids and NMPs.</p>
+
+    <h3>Pipeline</h3>
+    <ol class="steps">
+      <li><b>Experimental and model design</b><span>Sample series, concentration ranges, and the internal-standard scheme designed against what the method could plausibly resolve.</span></li>
+      <li class="alt"><b>Sample preparation</b><span>Matched buffer, pH and ionic strength across the series, with dioxane as an inert internal diffusion reference.</span></li>
+      <li><b>Acquisition</b><span>Performed by NMR specialist collaborators, who also carried out the initial signal analysis.</span></li>
+      <li class="alt"><b>Per-point diffusion fitting</b><span>Stejskal–Tanner fits per resolved resonance, yielding D_obs with a standard error rather than a bare point estimate.</span></li>
+      <li><b>Internal-standard correction</b><span>Normalise against the dioxane reference so that differences reflect association, not sample-to-sample viscosity and temperature drift.</span></li>
+      <li class="alt"><b>Modelling and sensitivity analysis</b><span>Fit association models to the corrected series — and, critically, simulate what interaction strength the concentration window and measurement precision could resolve at all.</span></li>
+    </ol>
+
+    <h3>What the method could and could not deliver</h3>
+    <p>Interactions at this scale are weak and were treated as such. The analysis reports detectable but small effects together with an explicit statement of the sensitivity floor and the model assumptions — because the honest limit of the experiment is part of the result, not a caveat appended to it. In particular, this work does <strong>not</strong> support a universal amino-acid/nucleotide affinity scale; it constrains where such a description holds and where the measurement stops being informative.</p>
+
+    <p>Three failure modes are checked explicitly at the per-point stage: convection artefacts, gradient-calibration error, and non-monoexponential decay from overlapping resonances. Any of the three can manufacture an apparent interaction from a well-behaved sample.</p>
+  </div>
+
+  <aside>
+    <div class="figure">
+      <div class="figlabel"><span>D_obs vs [NMP]</span><span>concentration →</span></div>
+      <svg viewBox="0 0 340 210" width="100%" role="img" aria-label="Schematic DOSY association curve">
+        <g class="grid">
+          <line x1="42" y1="28" x2="322" y2="28"/><line x1="42" y1="73" x2="322" y2="73"/>
+          <line x1="42" y1="118" x2="322" y2="118"/><line x1="42" y1="163" x2="322" y2="163"/>
+        </g>
+        <line class="axis" x1="42" y1="175" x2="322" y2="175"/>
+        <line class="axis" x1="42" y1="18" x2="42" y2="175"/>
+        <path class="curve c5" d="M42 40 C 90 44, 116 62, 146 92 C 176 122, 214 146, 262 156 C 288 161, 306 163, 322 164"/>
+        <path class="curve c3" style="stroke-dasharray:5 5;opacity:.65" d="M42 40 C 78 41, 100 50, 126 72 C 158 100, 206 136, 262 150 C 290 157, 306 160, 322 161"/>
+        <g fill="var(--cy5)">
+          <circle cx="42" cy="41" r="3.2"/><circle cx="86" cy="47" r="3.2"/><circle cx="122" cy="70" r="3.2"/>
+          <circle cx="152" cy="99" r="3.2"/><circle cx="196" cy="134" r="3.2"/><circle cx="248" cy="153" r="3.2"/>
+          <circle cx="300" cy="162" r="3.2"/>
+        </g>
+      </svg>
+      <p class="figcap">Schematic of the observable: diffusion decreasing as a species partitions into a slower-diffusing associated state. Dashed trace shows the same interaction at lower concentration — the transition the experiment can actually sample depends on where the concentration window sits.</p>
+    </div>
+
+    <div class="panel">
+      <h4>Observables</h4>
+      <ul>
+        <li>D<sub>obs</sub> per resolved resonance</li>
+        <li>Dioxane-corrected relative diffusion</li>
+        <li>Association model parameters, with limits stated</li>
+        <li>Sensitivity floor of the measurement</li>
+        <li>Hydrodynamic radius via Stokes–Einstein</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h4>Stack</h4>
+      <ul>
+        <li>Python · NumPy · SciPy <span class="mono">optimize</span></li>
+        <li>pandas for titration bookkeeping</li>
+        <li>matplotlib / seaborn figures</li>
+        <li>Bruker / processed-spectrum import</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h4>Related notebooks</h4>
+      <ul>
+        <li><a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/02_binding_thermodynamics_and_curves.ipynb" target="_blank" rel="noopener noreferrer">02 · Binding thermodynamics &amp; curves</a></li>
+        <li><a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/04_sequence_structure_utilities.ipynb" target="_blank" rel="noopener noreferrer">04 · NMR data heatmaps</a></li>
+      </ul>
+    </div>
+  </aside>
+</div></div></section>
+
+<hr class="rule">
+
+<section class="section"><div class="wrap">
+  <p class="eyebrow">Code</p>
+  <h2>Where this lives in the repository</h2>
+  <div class="nblist">
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/02_binding_thermodynamics_and_curves.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§1</span>
+      <span><span class="nb-title">Fraction bound vs. K<sub>d</sub></span><br><span class="nb-desc">Quadratic 1:1 equilibrium solved across concentration regimes — the core of the DOSY isotherm model.</span></span>
+    </a>
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/02_binding_thermodynamics_and_curves.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§2</span>
+      <span><span class="nb-title">Theoretical binding curves for NMR</span><br><span class="nb-desc">Simulated titrations across association constants — used to choose concentrations before measuring.</span></span>
+    </a>
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/02_binding_thermodynamics_and_curves.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§3</span>
+      <span><span class="nb-title">ΔG → K<sub>d</sub> conversion</span><br><span class="nb-desc">Placing fitted affinities on the same scale as published per-residue free energies.</span></span>
+    </a>
+  </div>
+  <div class="cta-row">
+    <a class="btn" href="https://github.com/franmiosto-hub/biophysics-portfolio" target="_blank" rel="noopener noreferrer">Repository ↗</a>
+    <a class="btn ghost" href="https://franmiosto-hub.github.io/biophysics-portfolio/#work" target="_blank" rel="noopener noreferrer">All projects</a>
+  </div>
+  <p class="note">Some measurements and protocols behind this page are unpublished and are described here at method level only. Parts of the underlying work were done in collaboration; only my own code is included in the repository.</p>
+</div></section>
+
+</main>
+
+<footer><div class="wrap">Binding modelling in DOSY · static page · works on GitHub Pages</div></footer>
+</body>
+</html>

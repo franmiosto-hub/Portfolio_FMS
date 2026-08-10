@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peptide array binding &amp; analysis — Fran Miočić-Stošić</title>
+<meta name="description" content="A custom 1,445-sequence peptide array for protein–RNA binding: design, high-throughput quality control, additive modelling by bounded-variable least squares, and disciplined interpretation limits.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+  <a class="brandmark" href="index.html">Fran Miočić-Stošić</a>
+  <nav class="navlinks">
+    <a href="index.html">profile</a>
+    <a href="dosy-binding-modelling.html">dosy</a>
+    <a class="here" href="peptide-array-binding.html">arrays</a>
+    <a href="protein-expression-purification.html">protein</a>
+    <a href="md-free-energy-perturbation.html">md &amp; fep</a>
+    <a class="hide-sm" href="https://franmiosto-hub.github.io/biophysics-portfolio/#work" target="_blank" rel="noopener noreferrer">code ↗</a>
+  </nav>
+</div></div>
+
+<header class="pagehead"><div class="wrap">
+  <a class="crumb" href="https://franmiosto-hub.github.io/biophysics-portfolio/" target="_blank" rel="noopener noreferrer">← code &amp; notebooks ↗</a>
+  <p class="eyebrow" style="margin-top:18px">Method page · high-throughput binding</p>
+  <h1>Peptide array binding and <span class="accent">analysis</span></h1>
+  <p class="lede">A custom <strong>1,445-sequence</strong> peptide array, designed from additive modelling of published data and measured across multiple RNA conditions. The analytical problem is not detection but <strong>deconvolution under uncertainty</strong>: turning a field of fluorescent spots into residue-level contributions, while establishing how far those contributions can honestly be pushed.</p>
+  <div class="tags">
+    <span class="tag">1,445 sequences</span><span class="tag">GenePix .gpr / .gal</span>
+    <span class="tag">Dual-channel Cy3/Cy5</span><span class="tag">BVLS</span>
+    <span class="tag">High-throughput QC</span><span class="tag">NumPy · SciPy · pandas</span>
+  </div>
+</div></header>
+
+<main>
+
+<section class="section"><div class="wrap"><div class="cols">
+  <div>
+    <p class="eyebrow">Design</p>
+    <h2>The array was modelled before it was printed</h2>
+    <p>The library design was itself an analysis. Additive modelling of published binding data was used to choose which 1,445 sequences would be informative — spanning composition space widely enough to constrain a residue-level model, rather than sampling sequences of independent interest. Design and analysis share the same model, which is what makes the resulting fit interpretable.</p>
+
+    <p class="eyebrow" style="margin-top:34px">Principle</p>
+    <h2>An additive residue-level model</h2>
+    <p>If residue contributions are approximately independent and additive, the signal for a peptide is the sum of its residue terms. Across the library this becomes an overdetermined linear system — a composition matrix times an unknown contribution vector against the observed intensities — solved as <strong>bounded-variable least squares</strong>, so that physically meaningful bounds on the coefficients are imposed as part of the fit rather than checked afterwards.</p>
+
+    <pre class="code-block">A · w ≈ y
+
+A : n_peptides × 20   composition (or positional) matrix
+y : n_peptides × 1    normalised, QC-filtered fluorescence
+w : 20 × 1            per-residue contribution
+
+w* = argmin ||A·w - y||²   subject to   lb ≤ w ≤ ub     (BVLS)</pre>
+
+    <p>Bounds matter more than they look. An unconstrained fit will happily assign large compensating positive and negative coefficients to residues that co-occur in the library, producing a well-fitting model made of physically meaningless terms. Constraining the admissible range keeps the solution in the region where the coefficients can be read as contributions at all.</p>
+
+    <h3>Why the pre-processing decides the result</h3>
+    <p>The solver step is the easy part; everything upstream of it determines whether the answer means anything. Saturation at the top of the dynamic range, spatial gradients across the slide, empty-spot effects, spot morphology, adjacency effects between neighbouring features, and channel bleed-through all masquerade as sequence preference. Each was assessed explicitly before any model was fitted.</p>
+
+    <h3>Pipeline</h3>
+    <ol class="steps">
+      <li><b>Library design</b><span>Additive modelling of published data to select 1,445 sequences that span composition space informatively.</span></li>
+      <li class="alt"><b>Parse the .gal layout</b><span>Recover which peptide sits at which block/row/column, joining scanner output to sequence identity rather than coordinates.</span></li>
+      <li><b>High-throughput quality control</b><span>Signal robustness, concentration consistency, spatial bias, empty-spot effects, spot morphology, adjacency, and composition-correlated artefacts — assessed systematically across the whole array, not spot-checked.</span></li>
+      <li class="alt"><b>Dual-channel normalisation</b><span>F635 (Cy5, target) against F532 (Cy3, peptide-density reference), so signal reflects binding rather than how much peptide was successfully printed.</span></li>
+      <li><b>BVLS deconvolution</b><span>Build the composition matrix and solve for bounded residue contributions, with cross-validation across held-out peptide subsets.</span></li>
+      <li class="alt"><b>Interpretation and visualisation</b><span>Contribution tables, grouped plots by residue chemistry, cross-condition heatmaps, per-target regressions, and residual analysis.</span></li>
+    </ol>
+
+    <h3>Where the data stopped supporting the model</h3>
+    <p>Later array runs showed a deterioration in quality that the QC surfaced clearly. The decision taken was to <strong>restrict the interpretation to what the good runs supported</strong> rather than force quantitative conclusions out of compromised arrays — the initial measurements did contain reproducible, sequence-dependent relative preferences, and that is what the analysis reports.</p>
+
+    <p>Two further limits are stated rather than smoothed over. Additivity cannot capture cooperativity between adjacent residues, peptide secondary structure, or avidity from multivalent presentation — so residuals are reported alongside the coefficients, and badly predicted peptides are surfaced as informative rather than discarded. And the result is explicitly <strong>not</strong> a universal affinity scale: it is a set of relative, condition-dependent preferences with a stated domain of validity.</p>
+  </div>
+
+  <aside>
+    <div class="figure">
+      <div class="figlabel"><span>RESIDUE CONTRIBUTIONS</span><span>BVLS weights</span></div>
+      <svg viewBox="0 0 340 210" width="100%" role="img" aria-label="Illustrative per-residue binding scale bar chart">
+        <g class="grid">
+          <line x1="34" y1="30" x2="326" y2="30"/><line x1="34" y1="70" x2="326" y2="70"/>
+          <line x1="34" y1="110" x2="326" y2="110"/><line x1="34" y1="150" x2="326" y2="150"/>
+        </g>
+        <line class="axis" x1="34" y1="178" x2="326" y2="178"/>
+        <line class="axis" x1="34" y1="20" x2="34" y2="178"/>
+        <g>
+          <rect x="42" y="34" width="17" height="144" fill="var(--cy5)"/>
+          <rect x="66" y="48" width="17" height="130" fill="var(--cy5)"/>
+          <rect x="90" y="76" width="17" height="102" fill="var(--cy5)"/>
+          <rect x="114" y="104" width="17" height="74" fill="var(--cy5)" opacity=".72"/>
+          <rect x="138" y="120" width="17" height="58" fill="var(--cy3)" opacity=".85"/>
+          <rect x="162" y="132" width="17" height="46" fill="var(--cy3)" opacity=".8"/>
+          <rect x="186" y="144" width="17" height="34" fill="var(--cy3)" opacity=".7"/>
+          <rect x="210" y="152" width="17" height="26" fill="var(--cy3)" opacity=".6"/>
+          <rect x="234" y="160" width="17" height="18" fill="var(--cy3)" opacity=".5"/>
+          <rect x="258" y="166" width="17" height="12" fill="var(--cy3)" opacity=".42"/>
+          <rect x="282" y="171" width="17" height="7" fill="var(--cy3)" opacity=".35"/>
+          <rect x="306" y="175" width="17" height="3" fill="var(--cy3)" opacity=".3"/>
+        </g>
+        <text x="34" y="196" font-family="JetBrains Mono, monospace" font-size="9" fill="var(--muted)">R  K  H  W  Y  F  Q  N  S  T  A  G</text>
+      </svg>
+      <p class="figcap">Illustrative shape of a deconvolved contribution profile for a nucleic-acid target: basic residues dominate, aromatics contribute a stacking term, small aliphatics contribute little. Relative and condition-dependent, not an absolute scale.</p>
+    </div>
+
+    <div class="panel">
+      <h4>Observables</h4>
+      <ul>
+        <li>Normalised F635/F532 per peptide</li>
+        <li>Bounded per-residue contributions</li>
+        <li>Cross-validated model performance</li>
+        <li>Residual outlier peptides</li>
+        <li>Cross-condition preference correlations</li>
+        <li>Run-to-run reproducibility flags</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h4>Stack</h4>
+      <ul>
+        <li>Python · NumPy · SciPy (BVLS)</li>
+        <li>pandas for chip/layout joins</li>
+        <li>seaborn heatmaps and grouped bars</li>
+        <li>GenePix .gal / .gpr parsing</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h4>Related notebooks</h4>
+      <ul>
+        <li><a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/01_peptide_microarray_binding_analysis.ipynb" target="_blank" rel="noopener noreferrer">01 · Peptide microarray binding analysis</a></li>
+        <li><a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/02_binding_thermodynamics_and_curves.ipynb" target="_blank" rel="noopener noreferrer">02 · Binding thermodynamics</a></li>
+      </ul>
+    </div>
+  </aside>
+</div></div></section>
+
+<hr class="rule">
+
+<section class="section"><div class="wrap">
+  <p class="eyebrow">Code</p>
+  <h2>Where this lives in the repository</h2>
+  <div class="nblist">
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/01_peptide_microarray_binding_analysis.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§1</span><span><span class="nb-title">Parse a .gal peptide library</span><br><span class="nb-desc">Extract the peptide identities laid out on the microarray.</span></span></a>
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/01_peptide_microarray_binding_analysis.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§2</span><span><span class="nb-title">Chip additive-scale deconvolution</span><br><span class="nb-desc">Aggregate dual-channel fluorescence and fit the bounded additive per-residue model.</span></span></a>
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/01_peptide_microarray_binding_analysis.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§3</span><span><span class="nb-title">Rebuild human-readable scales table</span><br><span class="nb-desc">Export the derived scales as a readable table.</span></span></a>
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/01_peptide_microarray_binding_analysis.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§4</span><span><span class="nb-title">Binding-scale visualisation</span><br><span class="nb-desc">Grouped plots and heatmaps of the derived scales.</span></span></a>
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/01_peptide_microarray_binding_analysis.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§5</span><span><span class="nb-title">Target-specific array plots</span><br><span class="nb-desc">Per-target summaries with regressions and statistics.</span></span></a>
+    <a href="https://github.com/franmiosto-hub/biophysics-portfolio/blob/main/01_peptide_microarray_binding_analysis.ipynb" target="_blank" rel="noopener noreferrer">
+      <span class="nb-name">§6</span><span><span class="nb-title">Homopolymer binding bar plot</span><br><span class="nb-desc">Compare G10/A10/C10/U10 binding with error bars.</span></span></a>
+  </div>
+  <div class="cta-row">
+    <a class="btn" href="https://github.com/franmiosto-hub/biophysics-portfolio" target="_blank" rel="noopener noreferrer">Repository ↗</a>
+    <a class="btn ghost" href="https://franmiosto-hub.github.io/biophysics-portfolio/#work" target="_blank" rel="noopener noreferrer">All projects</a>
+  </div>
+  <p class="note">Array designs and some target sequences are unpublished and are omitted. Parts of the underlying work were done in collaboration; only my own code is included in the repository.</p>
+</div></section>
+
+</main>
+
+<footer><div class="wrap">Peptide array binding and analysis · static page · works on GitHub Pages</div></footer>
+</body>
+</html>
