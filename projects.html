@@ -37,9 +37,12 @@ details[open] .pc-year .chev{transform:rotate(90deg)}
 .pj-sub a:hover,.pj-links a:hover{color:var(--cy5)}
 .pj-links{display:flex;flex-wrap:wrap;gap:18px}
 .pj-note{margin-top:0;max-width:68ch}
-.pj-fig{margin:0;max-width:520px;background:var(--paper);border:1px solid var(--hair);border-radius:4px;padding:10px}
-.pj-fig img{width:100%;height:auto;display:block}
 @media(max-width:640px){.pc-head{grid-template-columns:auto 1fr;gap:14px;padding:16px}.pc-year{grid-column:2;justify-self:start}.pc-body{padding-left:16px}}
+.pc-thumb{width:96px;height:64px;object-fit:cover;border:1px solid var(--hair);border-radius:3px;background:#fff;display:block}
+.pj-fig{margin:0;max-width:520px;background:#fff;border:1px solid var(--hair);border-radius:4px;padding:10px}
+.pj-fig img{width:100%;height:auto;display:block}
+.pj-fig figcaption{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5}
+@media(max-width:640px){.pc-thumb{width:72px;height:48px}}
 </style>
 </head>
 <body>
@@ -101,9 +104,10 @@ details[open] .pc-year .chev{transform:rotate(90deg)}
     <summary class="pc-head">
       <span class="pc-code">MSc</span>
       <span class="pc-title">Two cancer-associated proline mutants of human DPP III<span class="pc-meta">Master's thesis · University of Zagreb · Lab for Protein Biochemistry and Molecular Modelling · Mentor: M. Matovina</span></span>
-      <span class="pc-year">2022 <span class="chev">›</span></span>
+      <span class="pc-year"><img class="pc-thumb" src="assets/img/msc.jpg" alt="" loading="lazy">2022 <span class="chev">›</span></span>
     </summary>
     <div class="pc-body">
+      <figure class="pj-fig"><img src="assets/img/msc.jpg" alt="Cartoon representation of the DPP III structure in two orientations: the upper domain in blue, the lower domain in pink, and the catalytic zinc ion as a yellow sphere." loading="lazy"><figcaption>Two views of the DPP III structure; the catalytic zinc is the yellow sphere. <!-- TODO: add source / credit line and confirm licence --></figcaption></figure>
       <div class="pj-row"><div class="lab">Question</div><p>Human DPP III is a peptidase that also binds Keap1 and so influences the Nrf2 oxidative-stress pathway. Do two mutations found in tumour samples (P358L from melanoma, P360S from ovarian cancer) change its activity, and the behaviour of the loop it uses to bind Keap1?</p></div>
       <div class="pj-row"><div class="lab">Approach</div><p>Site-directed mutagenesis, expression and purification, fluorimetric enzyme kinetics, and AMBER MD simulations of wild type and both mutants.</p></div>
       <div class="pj-row"><div class="lab">Outcome</div><ul><li>Both mutants were produced and purified, and both have a lower specificity constant than wild type (higher <i>K</i><sub>M</sub>, lower turnover).</li><li>The global fold is preserved in simulation, but the loop carrying the Keap1-binding ETGE motif is more flexible in P358L: a stabilising Gln484–Thr475 hydrogen bond is present in ~17% of frames, against ~93% in wild type.</li></ul></div>
