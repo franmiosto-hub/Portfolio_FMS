@@ -31,6 +31,11 @@
 .pcard{background:var(--paper);border:1px solid var(--hair);border-radius:4px;padding:18px 20px}
 .pcard h4{font-family:var(--display);font-size:15.5px;margin:0 0 6px;font-weight:600}
 .pcard p{font-size:13.5px;color:var(--muted);margin:0}
+.facts{margin-top:26px;background:var(--paper);border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+.facts div{display:grid;grid-template-columns:100px 1fr;gap:20px;align-items:baseline;padding:12px 4px;border-top:1px solid var(--hair)}
+.facts div:first-child{border-top:none}
+.facts b{font-family:var(--mono);font-weight:600;font-size:20px}
+.facts span{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -56,7 +61,7 @@
   <p class="lede">The recurring pattern in my work is not a method — it is being the person who takes a partly defined problem spread across several groups and makes it move. Below is that pattern with scope, scale and outcome attached, starting with the largest instance of it.</p>
 </div></header>
 
-<div class="factbar wrap" style="max-width:1080px">
+<div class="facts wrap">
   <div><b>4</b><span> workstreams run</span></div>
   <div><b>~5</b><span> groups coordinated</span></div>
   <div><b>5</b><span> countries delivered in</span></div>
