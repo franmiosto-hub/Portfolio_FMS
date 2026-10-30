@@ -1,6 +1,6 @@
 # Portfolio_FMS
 
-Professional profile and method pages for **Fran Miočić-Stošić** — experimental and computational biophysicist, Vienna.
+Professional profile and method pages for **Fran Miočić-Stošić, PhD** — experimental and computational biophysicist, Vienna.
 
 **Live:** https://franmiosto-hub.github.io/Portfolio_FMS/
 
