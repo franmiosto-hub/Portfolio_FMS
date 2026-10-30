@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research projects — Fran Miočić-Stošić</title>
+<meta name="description" content="Research projects from bachelor's thesis to PhD: the question asked and what came out of it, across structural biology, biophysics and molecular simulation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.plist{display:grid;gap:14px}
+.pcard{background:var(--paper);border:1px solid var(--hair);border-radius:4px;transition:border-color .15s}
+.pcard:hover{border-color:#c3ccce}
+.pc-head{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;padding:20px 22px;cursor:pointer;list-style:none}
+.pc-head::-webkit-details-marker{display:none}
+.pc-code{font-family:var(--mono);font-weight:600;font-size:13px;color:var(--paper);min-width:42px;height:38px;padding:0 6px;display:grid;place-items:center;border-radius:3px;background:var(--cy5)}
+.pcard:nth-child(even) .pc-code{background:var(--cy3)}
+.pc-title{font-family:var(--display);font-weight:600;font-size:18px}
+.pc-meta{display:block;font-family:var(--body);font-weight:400;font-size:13.5px;color:var(--muted);margin-top:3px;max-width:66ch}
+.pc-year{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:8px}
+.pc-year .chev{transition:transform .2s}
+details[open] .pc-year .chev{transform:rotate(90deg)}
+.pc-body{padding:6px 22px 22px 82px;display:grid;gap:16px}
+.pj-row .lab{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.pj-row p{margin:4px 0 0;max-width:68ch;font-size:14.5px;color:#2a3a40}
+.pj-row ul{margin:4px 0 0;padding-left:18px;max-width:68ch;font-size:14.5px;color:#2a3a40}
+.pj-row li{margin:4px 0}
+.pj-sub{display:grid;gap:14px;margin-top:10px}
+.pj-sub>div{border-left:2px solid var(--hair);padding:2px 0 2px 14px;max-width:68ch}
+.pj-sub b{font-family:var(--mono);font-size:12px;font-weight:600}
+.pj-sub p{margin:2px 0}
+.pj-sub .q{color:var(--muted);font-size:13.5px}
+.pj-sub .o{font-size:14px}
+.pj-sub a,.pj-links a{font-family:var(--mono);font-size:12px;text-decoration:none;color:var(--ink);border-bottom:1px solid var(--cy5);padding-bottom:2px}
+.pj-sub a:hover,.pj-links a:hover{color:var(--cy5)}
+.pj-links{display:flex;flex-wrap:wrap;gap:18px}
+.pj-note{margin-top:0;max-width:68ch}
+.pj-fig{margin:0;max-width:520px;background:var(--paper);border:1px solid var(--hair);border-radius:4px;padding:10px}
+.pj-fig img{width:100%;height:auto;display:block}
+@media(max-width:640px){.pc-head{grid-template-columns:auto 1fr;gap:14px;padding:16px}.pc-year{grid-column:2;justify-self:start}.pc-body{padding-left:16px}}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+  <a class="brandmark" href="index.html">Fran Miočić-Stošić</a>
+  <nav class="navlinks">
+    <a href="index.html">profile</a>
+    <a class="here" href="projects.html">projects</a>
+    <a href="leadership-delivery.html">delivery</a>
+    <a href="dosy-binding-modelling.html">dosy</a>
+    <a href="peptide-array-binding.html">arrays</a>
+    <a href="protein-expression-purification.html">protein</a>
+    <a href="md-free-energy-perturbation.html">md &amp; fep</a>
+    <a class="hide-sm" href="https://franmiosto-hub.github.io/biophysics-portfolio/#work" target="_blank" rel="noopener noreferrer">code ↗</a>
+  </nav>
+</div></div>
+
+<header class="pagehead"><div class="wrap">
+  <a class="crumb" href="index.html">← profile</a>
+  <p class="eyebrow" style="margin-top:18px">Bachelor's · placements · Master's · PhD</p>
+  <h1>Research <span class="accent">projects</span></h1>
+  <p class="lede">What I asked, and what came out of it — five projects from a bachelor's review to a doctoral thesis, moving from <strong>protein biochemistry</strong> and <strong>structural biology</strong> to <strong>biophysics</strong> and <strong>molecular simulation</strong>.</p>
+</div></header>
+
+<main>
+<section class="section"><div class="wrap">
+  <div class="plist">
+  <details class="pcard">
+    <summary class="pc-head">
+      <span class="pc-code">BSc</span>
+      <span class="pc-title">Principles of neurotransmission by biogenic amines<span class="pc-meta">Bachelor's thesis · University of Zagreb, Faculty of Science · Mentor: A. Maršavelski</span></span>
+      <span class="pc-year">2019 <span class="chev">›</span></span>
+    </summary>
+    <div class="pc-body">
+      <div class="pj-row"><div class="lab">Question</div><p>How does a signal cross the synapse in neurons that use biogenic amines (dopamine, norepinephrine, epinephrine, histamine, serotonin) as messengers, from synthesis of the transmitter to its removal?</p></div>
+      <div class="pj-row"><div class="lab">Approach</div><p>Literature review of the complete neurotransmission cycle.</p></div>
+      <div class="pj-row"><div class="lab">Outcome</div><ul><li>A structured synthesis of the cycle: synthesis of catecholamines, indolamines and imidazolamines; vesicle loading by VMAT; Ca²⁺-triggered exocytosis; receptor binding and receptor subtypes; deactivation by reuptake and catabolism.</li></ul></div>
+      
+      <!-- SAXS figure slot (Graz): <figure class="pj-fig"><img src="assets/saxs.png" alt="..."><figcaption>... (unpublished, preliminary)</figcaption></figure> -->
+      <div class="pj-links"><a href="https://urn.nsk.hr/urn:nbn:hr:217:229303" target="_blank" rel="noopener noreferrer">Thesis (in Croatian) ↗</a></div>
+    </div>
+  </details>
+  <details class="pcard">
+    <summary class="pc-head">
+      <span class="pc-code">FR</span>
+      <span class="pc-title">GacS–RetS: crystallising a bacterial virulence switch<span class="pc-meta">Research placement · AFMB, Marseille · 525 h · Lab of Florence Vincent</span></span>
+      <span class="pc-year">2021 <span class="chev">›</span></span>
+    </summary>
+    <div class="pc-body">
+      <div class="pj-row"><div class="lab">Question</div><p>In <em>Pseudomonas aeruginosa</em>, the kinase GacS and its inhibitor RetS act as a switch between chronic and acute infection. How does RetS act on GacS, and how do the open and closed conformations of GacS differ?</p></div>
+      <div class="pj-row"><div class="lab">Approach</div><p>Protein production and crystallisation screens of GacS in open and closed conformations, with and without RetS, aimed at a structure.</p></div>
+      <div class="pj-row"><div class="lab">Outcome</div><ul><li>Crystals from these screens supported later discoveries in the group. Those results are not yet published.</li></ul></div>
+      
+      <!-- SAXS figure slot (Graz): <figure class="pj-fig"><img src="assets/saxs.png" alt="..."><figcaption>... (unpublished, preliminary)</figcaption></figure> -->
+      
+    </div>
+  </details>
+  <details class="pcard">
+    <summary class="pc-head">
+      <span class="pc-code">MSc</span>
+      <span class="pc-title">Two cancer-associated proline mutants of human DPP III<span class="pc-meta">Master's thesis · University of Zagreb · Lab for Protein Biochemistry and Molecular Modelling · Mentor: M. Matovina</span></span>
+      <span class="pc-year">2022 <span class="chev">›</span></span>
+    </summary>
+    <div class="pc-body">
+      <div class="pj-row"><div class="lab">Question</div><p>Human DPP III is a peptidase that also binds Keap1 and so influences the Nrf2 oxidative-stress pathway. Do two mutations found in tumour samples (P358L from melanoma, P360S from ovarian cancer) change its activity, and the behaviour of the loop it uses to bind Keap1?</p></div>
+      <div class="pj-row"><div class="lab">Approach</div><p>Site-directed mutagenesis, expression and purification, fluorimetric enzyme kinetics, and AMBER MD simulations of wild type and both mutants.</p></div>
+      <div class="pj-row"><div class="lab">Outcome</div><ul><li>Both mutants were produced and purified, and both have a lower specificity constant than wild type (higher <i>K</i><sub>M</sub>, lower turnover).</li><li>The global fold is preserved in simulation, but the loop carrying the Keap1-binding ETGE motif is more flexible in P358L: a stabilising Gln484–Thr475 hydrogen bond is present in ~17% of frames, against ~93% in wild type.</li></ul></div>
+      
+      <!-- SAXS figure slot (Graz): <figure class="pj-fig"><img src="assets/saxs.png" alt="..."><figcaption>... (unpublished, preliminary)</figcaption></figure> -->
+      <div class="pj-links"><a href="https://urn.nsk.hr/urn:nbn:hr:217:918165" target="_blank" rel="noopener noreferrer">Thesis (in Croatian) ↗</a></div>
+    </div>
+  </details>
+  <details class="pcard">
+    <summary class="pc-head">
+      <span class="pc-code">GZ</span>
+      <span class="pc-title">DPP III and the Keap1 Kelch domain<span class="pc-meta">Research placement · University of Graz, Institute of Molecular Biosciences · 720 h · Host: Tea Pavkov-Keller</span></span>
+      <span class="pc-year">2022 <span class="chev">›</span></span>
+    </summary>
+    <div class="pc-body">
+      <div class="pj-row"><div class="lab">Question</div><p>Does either mutation change how tightly DPP III binds the Kelch domain of Keap1, the interaction that stabilises Nrf2 and can raise chemotherapy resistance in tumour cells?</p></div>
+      <div class="pj-row"><div class="lab">Approach</div><p>Isothermal titration calorimetry (ITC) of wild-type and mutant DPP III against the Kelch domain.</p></div>
+      <div class="pj-row"><div class="lab">Outcome</div><ul><li>P358L binds Kelch roughly 4–5× more tightly (<i>K</i><sub>d</sub> ≈ 150 nM) than wild type (≈ 690 nM) or P360S (≈ 550 nM), consistent with the extra loop flexibility seen in simulation.</li></ul></div>
+      <div class="note pj-note">ITC runs showed partial protein precipitation and an apparent stoichiometry below 1:1, so absolute thermodynamic values are approximate. The <i>K</i><sub>d</sub> trend is the result.</div>
+      <!-- SAXS figure slot (Graz): <figure class="pj-fig"><img src="assets/saxs.png" alt="..."><figcaption>... (unpublished, preliminary)</figcaption></figure> -->
+      
+    </div>
+  </details>
+  <details class="pcard" open>
+    <summary class="pc-head">
+      <span class="pc-code">PhD</span>
+      <span class="pc-title">Weak RNA–protein interactions across scales<span class="pc-meta">PhD · Max Perutz Labs, University of Vienna · Zagrović group · FWF ELLIPSE</span></span>
+      <span class="pc-year">2026 <span class="chev">›</span></span>
+    </summary>
+    <div class="pc-body">
+      <div class="pj-row"><div class="lab">Question</div><p>Is the specificity of RNA–protein binding in unstructured contexts partly set by the intrinsic affinities between individual nucleotides and amino acids, which would tie binding to the structure of the genetic code (the complementarity hypothesis)?</p></div>
+      <div class="pj-row"><div class="lab">Approach</div><p>A multi-pronged study at four length scales:</p><div class="pj-sub"><div><b>Monomers · DOSY NMR</b><p class="q">Can single amino-acid/nucleotide affinities be measured in solution?</p><p class="o">Nucleotide monophosphates shift amino-acid diffusion coefficients by more than the variability of the internal standard. A simplified geometric model resolves binding preferences, and a complete 4×20 affinity set looks feasible.</p><a href="dosy-binding-modelling.html">DOSY method page →</a></div><div><b>Oligomers · ultra-high-density peptide arrays</b><p class="q">Do weak monomer preferences add up in short peptides?</p><p class="o">Relative affinity patterns were reproducible across RNA concentrations. Single amino-acid contributions strongly predict oligomer binding, with the strongest binders deviating from simple additivity.</p><a href="peptide-array-binding.html">Peptide-array method page →</a></div><div><b>Protein · FUS and FMRP</b><p class="q">Do the mRNA's composition profile and the protein's affinity profile line up?</p><p class="o">Strong correlations along the sequence (FUS purine content vs guanine-affinity profile, <i>R</i> = −0.84). Full-length FUS was expressed and purified; low RNA yield from in vitro transcription blocked the quantitative binding assays.</p><a href="protein-expression-purification.html">Protein production page →</a></div><div><b>Simulation · MD and free-energy perturbation</b><p class="q">Can nucleotide perturbations in RNA–protein complexes be compared systematically?</p><p class="o">The FUS ZnF–RNA complex was stable and became the model system. The result is a validated, scalable free-energy workflow for nucleotide perturbations.</p><a href="md-free-energy-perturbation.html">MD &amp; FEP page →</a></div></div></div>
+      <div class="pj-row"><div class="lab">Outcome</div><ul><li>The thesis neither supports nor rejects the complementarity hypothesis. It shows that weak, additive RNA–protein interactions are measurable and reproducible, that no single universal nucleotide/amino-acid affinity matrix holds across contexts, and it leaves a toolbox of methods for testing the hypothesis further.</li></ul></div>
+      
+      <!-- SAXS figure slot (Graz): <figure class="pj-fig"><img src="assets/saxs.png" alt="..."><figcaption>... (unpublished, preliminary)</figcaption></figure> -->
+      <div class="pj-links"><a href="https://franmiosto-hub.github.io/biophysics-portfolio/#work" target="_blank" rel="noopener noreferrer">Analysis code &amp; notebooks ↗</a></div>
+    </div>
+  </details>
+  </div>
+  <p class="note">Where work was collaborative, contributions are attributed on the relevant page. Unpublished results are described at a general level only.</p>
+</div></section>
+</main>
+
+<footer><div class="wrap">Fran Miočić-Stošić · Vienna · static page on GitHub Pages</div></footer>
+</body>
+</html>
